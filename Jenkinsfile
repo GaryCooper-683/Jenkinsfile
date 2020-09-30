@@ -17,3 +17,19 @@ pipeline {
 
   }
 }
+ stage("Ensure content is up"){
+            steps{
+                retry(3){
+                sh '''
+                        if curl --silent --head --fail "http://udacityjenkins.s3-website.us-west-2.amazonaws.com/"; then \
+                            echo "The content is up ... "; \
+                            exit 0; \
+                        else \
+                            echo "This URL Not Exist !!"; \
+                            exit 1; \
+                        fi 
+                '''
+            }}
+        }
+    }
+}
