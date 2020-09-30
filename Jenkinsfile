@@ -1,22 +1,19 @@
 pipeline {
      agent any
-     stages{
-        stage("Lint HTML"){
-            steps{
-                sh '''
-                    echo "Linting HTML..."
-                    tidy -q -e *.html
-                '''
-            }
+  stages {
+    stage("Lint HTML") {
+      steps {
+        sh 'tidy -q -e *.html'  
+      }
+    }
+    stage('Upload to AWS') {
+      steps {
+        withAWS(region:'us-west-2',credentials:'aws-static') {
+          sh 'echo "Uploading content with AWS creds"'
+          s3Upload(pathStyleAccessEnabled: true, payloadSigningEnabled: true, file:'index.html', bucket:'udacityjenkins')
         }
-       stage ("Upload to AWS") {
-           steps {
-               withAWS(region:'us-west-2',credentials:'aws-static') {
-                 sh 'echo "Uploading content with AWS creds"'
-                     s3Upload(pathStyleAccessEnabled: true, payloadSigningEnabled: true, file:'index.html',  bucket:'jenkinsgc')
-}
-               '''
-             }
-         }
-     }
+      }
+    }
+
+  }
 }
